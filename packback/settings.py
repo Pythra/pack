@@ -7,7 +7,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "http://102.90.45.91",  # Your phone IP address added here
+    "http://102.90.45.91",
+    'http://www.pythra.pythonanywhere.com',
 ]
 
 SECRET_KEY = 'django-insecure-q0!xc$p92_b+f1xjew-hhvxh-esjic3qh&ky+#1b-)!580)*=m'
@@ -16,8 +17,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'pack',
     'corsheaders',
+    'pack',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -25,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -40,6 +42,15 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'packback.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 TEMPLATES = [
     {
@@ -97,7 +108,5 @@ MEDIA_URL = '/media/'
 
 # The absolute path to the directory where collectstatic will collect static files for deployment.
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
- 
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' 
- 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
