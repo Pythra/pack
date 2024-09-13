@@ -1,4 +1,3 @@
-# models.py
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -14,49 +13,64 @@ STATUS = (
     ('complete', 'complete'),
 )
 
-AVAILABILITY = (
-    ('off', 'off'),
-    ('on', 'on'),
+SALETYPE = (
+    ('normal', 'normal'),
+    ('preorder', 'preorder'),
+    ('bulkbuy', 'bulkbuy'),
+    ('subdistribution', 'subdistribution'),
+    ('paysmall', 'paysmall'),
 )
+
 
 class Product(models.Model):
     name = models.CharField(max_length=25)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    forsale = models.BooleanField(default=False)
+    price = models.IntegerField()
     picture = models.ImageField(upload_to='pictures', null=True, blank=True)
     category = models.CharField(choices=CAT, max_length=25)
-    availability = models.CharField(choices=AVAILABILITY, max_length=5, default='off')
+    description = models.TextField(null=True, blank=True)  # Corrected field type
+    onhand = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return str(self.name)
+        return self.name
 
-class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
-    def __str__(self):
-        return f"Cart of {self.user.username}"
-
-class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+class AppItem(models.Model):
+    saletype = models.CharField(choices=SALETYPE, max_length=25, default='normal')
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    displayquantity = models.PositiveIntegerField(default=0)
+    maxorderquantity = models.IntegerField(default=50)
+    minorderquantity = models.IntegerField(default=1)
+    condition = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True, related_name='conditioned_items')  # Use related_name to avoid conflicts
+    productratio = models.IntegerField(default=10, blank=True)  # Avoid null for IntegerField
+    conditionratio = models.IntegerField(default=1, blank=True)
+    availablecondition = models.PositiveIntegerField()
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.saletype}"
+
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(choices=STATUS, max_length=25, default='pending')  # Corrected default status
+    total = models.PositiveIntegerField()
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.id} by {self.user.username}"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    total = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name}"
 
-    @property
-    def total_price(self):
-        return self.quantity * self.product.price
-
-class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    status = models.CharField(choices=STATUS, max_length=25, default='pending')
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"Order {self.id} by {self.user.username}"
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

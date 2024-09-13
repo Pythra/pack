@@ -1,26 +1,23 @@
-# views.py
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.response import Response
-from .models import Product, Order, Profile, CartItem
-from .serializers import ProductSerializer, OrderSerializer, ProfileSerializer, CartItemSerializer
+from .models import Product, Order, Profile, AppItem
+from .serializers import ProductSerializer, OrderSerializer, ProfileSerializer, AppItemSerializer
 
+# View to list all products (authenticated users only)
 class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [AllowAny]  # Allow all users, no authentication required
-
-class CartListView(generics.ListAPIView):
-    serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
-    def get_queryset(self):
-        user = self.request.user
-        cart = user.cart
-        return CartItem.objects.filter(cart=cart)
+# View to list all AppItems (public access)
+class AppItemListView(generics.ListAPIView):
+    queryset = AppItem.objects.all()  # Listing all AppItems
+    serializer_class = AppItemSerializer
+    permission_classes = [AllowAny]  # Public access allowed
 
+# View to list orders for the authenticated user
 class OrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
@@ -30,6 +27,7 @@ class OrderListView(generics.ListAPIView):
         user = self.request.user
         return Order.objects.filter(user=user)
 
+# View to retrieve the profile of the authenticated user
 class UserDetailView(generics.RetrieveAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
