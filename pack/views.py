@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 
 from .models import Product, AppItem, Order, OrderItem, Profile
-from .serializers import ProductSerializer, AppItemSerializer, OrderSerializer, OrderItemSerializer, ProfileSerializer
+from .serializers import ProductSerializer, AppItemSerializer, OrderSerializer, OrderItemSerializer, ProfileSerializer, OrderItemCreateSerializer
 
 # View to list all products (authenticated users only)
 class ProductListView(generics.ListAPIView):
@@ -57,7 +57,7 @@ class OrderCreateView(generics.CreateAPIView):
 
 class OrderItemCreateView(generics.CreateAPIView):
     queryset = OrderItem.objects.all()
-    serializer_class = OrderItemSerializer
+    serializer_class = OrderItemCreateSerializer
     permission_classes = [AllowAny]
 
 # View to retrieve the profile of the authenticated user
