@@ -23,8 +23,7 @@ class AppItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'saletype', 'creator', 'product', 'displayquantity', 'maxorderquantity', 'minorderquantity', 'condition', 'productratio', 'conditionratio', 'availablecondition', 'created_on']
 
 class OrderItemSerializer(serializers.ModelSerializer):  
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
-    
+    product = ProductSerializer()
     class Meta:
         model = OrderItem
         fields = ['session_id', 'product', 'quantity', 'total']
