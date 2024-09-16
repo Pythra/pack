@@ -16,7 +16,9 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['user', 'address', 'phone', 'first_name', 'last_name', 'joined']
 
-class AppItemSerializer(serializers.ModelSerializer):
+class AppItemSerializer(serializers.ModelSerializer):    
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+
     class Meta:
         model = AppItem
         fields = ['id', 'saletype', 'creator', 'product', 'displayquantity', 'maxorderquantity', 'minorderquantity', 'condition', 'productratio', 'conditionratio', 'availablecondition', 'created_on']

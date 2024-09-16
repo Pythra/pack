@@ -14,8 +14,6 @@ from .serializers import ProductSerializer, AppItemSerializer, OrderSerializer, 
 class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [TokenAuthentication]
 
 # View to retrieve a single product by its ID
 class ProductDetailView(generics.RetrieveAPIView):
