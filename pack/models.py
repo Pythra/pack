@@ -8,6 +8,8 @@ CAT = (
 )
 
 STATUS = (
+    ('empty', 'empty'),
+    ('unplaced', 'unplaced'),
     ('pending', 'pending'),
     ('confirmed', 'confirmed'),
     ('complete', 'complete'),
@@ -21,19 +23,17 @@ SALETYPE = (
     ('paysmall', 'paysmall'),
 )
 
-
 class Product(models.Model):
     name = models.CharField(max_length=25)
     forsale = models.BooleanField(default=False)
     price = models.IntegerField()
     picture = models.ImageField(upload_to='pictures', null=True, blank=True)
-    category = models.CharField(choices=CAT, max_length=25)
-    description = models.TextField(null=True, blank=True)  # Corrected field type
+    category = models.CharField(choices=CAT, max_length=25, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     onhand = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
-
 
 class AppItem(models.Model):
     saletype = models.CharField(choices=SALETYPE, max_length=25, default='normal')
@@ -42,35 +42,33 @@ class AppItem(models.Model):
     displayquantity = models.PositiveIntegerField(default=0)
     maxorderquantity = models.IntegerField(default=50)
     minorderquantity = models.IntegerField(default=1)
-    condition = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True, related_name='conditioned_items')  # Use related_name to avoid conflicts
-    productratio = models.IntegerField(default=10, blank=True)  # Avoid null for IntegerField
-    conditionratio = models.IntegerField(default=1, blank=True)
-    availablecondition = models.PositiveIntegerField()
+    condition = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True, related_name='conditioned_items')
+    productratio = models.IntegerField(default=10)
+    conditionratio = models.IntegerField(default=1)
+    availablecondition = models.PositiveIntegerField( null=True, blank=True, )
     created_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.product.name} - {self.saletype}"
 
-
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(choices=STATUS, max_length=25, default='pending')  # Corrected default status
-    total = models.PositiveIntegerField()
+    status = models.CharField(choices=STATUS, max_length=25, default='pending')
+    total = models.PositiveIntegerField(default=0)
     created_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Order {self.id} by {self.user.username}"
 
-
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+class OrderItem(models.Model): 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
+    quantity = models.IntegerField(default=1)    
+    session_id = models.CharField(max_length=100, null=True, blank=True)  # Temporary identifier
     total = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name}"
-
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
