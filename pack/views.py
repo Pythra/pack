@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
@@ -34,27 +34,6 @@ class OrderItemListView(generics.ListAPIView):
     serializer_class = OrderItemSerializer
     permission_classes = [AllowAny] 
     
-
-# View to list orders for the authenticated user
-class OrderListView(generics.ListAPIView):
-    serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [TokenAuthentication]
-
-    def get_queryset(self):
-        user = self.request.user
-        return OrderItem.objects.filter(user=user)
-
-# View to create an order
-class OrderCreateView(generics.CreateAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-    permission_classes = [AllowAny]
-    
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-
 class OrderItemCreateView(generics.CreateAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemCreateSerializer
@@ -110,3 +89,38 @@ def transfer_order_items(request):
     order_items.update(user=user, session_id=None)
 
     return Response({'status': 'success', 'message': 'Order items transferred successfully'})
+
+@api_view(['POST'])
+def checkout(request):
+    user = request.user if request.user.is_authenticated else None
+    session_id = request.data.get('session_id')
+    
+    if not user and not session_id:
+        return Response({"error": "User or session ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Fetch all OrderItems for the user or session_id
+    if user:
+        order_items = OrderItem.objects.filter(user=user)
+    else:
+        order_items = OrderItem.objects.filter(session_id=session_id)
+
+    if not order_items.exists():
+        return Response({"error": "No items found in the cart."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Calculate the total price of all the items in the cart
+    total_price = sum(item.total for item in order_items)
+
+    # Create a new Order for the user with a default status of 'unplaced'
+    order = Order.objects.create(
+        user=user,
+        status='unplaced',  # Default status for newly created orders
+        total=total_price
+    )
+
+    # Update OrderItems to associate them with the newly created Order
+    order_items.update(user=user)  # Assign the user if session_id was used earlier
+
+    # Optionally, delete all the OrderItems to clear the cart
+    order_items.delete()
+
+    return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
