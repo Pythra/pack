@@ -26,10 +26,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
     class Meta:
         model = OrderItem
-        fields = ['session_id', 'product', 'quantity', 'total']
+        fields = ['user', 'session_id', 'product', 'quantity', 'total']
 
 class OrderItemCreateSerializer(serializers.ModelSerializer):  
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
     class Meta:
         model = OrderItem
-        fields = ['session_id', 'product', 'quantity', 'total']
+        fields = ['user', 'session_id', 'product', 'quantity', 'total']
