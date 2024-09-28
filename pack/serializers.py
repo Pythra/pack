@@ -18,18 +18,31 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class AppItemSerializer(serializers.ModelSerializer):    
     product = ProductSerializer()
+    
     class Meta:
         model = AppItem
         fields = ['id', 'saletype', 'creator', 'product', 'displayquantity', 'maxorderquantity', 'minorderquantity', 'condition', 'productratio', 'conditionratio', 'availablecondition', 'created_on']
 
 class OrderItemSerializer(serializers.ModelSerializer):  
     product = ProductSerializer()
+    
     class Meta:
         model = OrderItem
         fields = ['user', 'session_id', 'product', 'quantity', 'total']
 
 class OrderItemCreateSerializer(serializers.ModelSerializer):  
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    
     class Meta:
         model = OrderItem
         fields = ['user', 'session_id', 'product', 'quantity', 'total']
+
+class CartItemCreateSerializer(serializers.ModelSerializer):  
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    
+    class Meta:
+        model = OrderItem
+        fields = ['session_id', 'product', 'quantity', 'total']
+    
+    def create(self, validated_data):
+        return OrderItem.objects.create(**validated_data)

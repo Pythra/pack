@@ -35,6 +35,15 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+class CartItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Link to the user
+    session_id = models.CharField(max_length=100, null=True, blank=True) 
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)  # Link to the product
+    quantity = models.PositiveIntegerField(default=1)  # Quantity of the product in the cart
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} in {self.user.username}'s cart"
+
 class AppItem(models.Model):
     saletype = models.CharField(choices=SALETYPE, max_length=25, default='normal')
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -45,7 +54,7 @@ class AppItem(models.Model):
     condition = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True, related_name='conditioned_items')
     productratio = models.IntegerField(default=10)
     conditionratio = models.IntegerField(default=1)
-    availablecondition = models.PositiveIntegerField( null=True, blank=True, )
+    availablecondition = models.PositiveIntegerField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -60,8 +69,8 @@ class Order(models.Model):
     def __str__(self):
         return f"Order {self.id} by {self.user.username}"
 
-class OrderItem(models.Model): 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', blank=True, null=True)  # Link to Order
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)    
@@ -71,7 +80,6 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.product.name}"
 
- 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.TextField(null=True, blank=True)
