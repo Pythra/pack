@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 from .views import (
     ProductListView, ProductDetailView, AppItemListView, OrderItemListView, 
-    UserDetailView, OrderItemCreateView, fetch_user, checkout, CartItemCreateView
+    UserDetailView, OrderItemCreateView, fetch_user, checkout, CartItemListView, CartItemCreateView
 )
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     path('checkout/', checkout, name='checkout'),
     path('app-items/', AppItemListView.as_view(), name='app-items'),
     path('cart-items/create/', CartItemCreateView.as_view(), name='cartitem-create'),
+    path('cart-items/', CartItemListView.as_view(), name='cart-items'),
     path('order-items/', OrderItemListView.as_view(), name='order-items'),
     path('profile/', UserDetailView.as_view(), name='profile'),
     path('order-items/create/', OrderItemCreateView.as_view(), name='orderitem-create'),

@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 
-from .models import Product, AppItem, Order, OrderItem, Profile
-from .serializers import ProductSerializer, AppItemSerializer, OrderSerializer, OrderItemSerializer, ProfileSerializer, CartItemCreateSerializer, OrderItemCreateSerializer
+from .models import Product, AppItem, Order, OrderItem, Profile, CartItem
+from .serializers import ProductSerializer, CartItemSerializer, AppItemSerializer, OrderSerializer, OrderItemSerializer, ProfileSerializer, CartItemCreateSerializer, OrderItemCreateSerializer
 
 # View to list all products (authenticated users only)
 class ProductListView(generics.ListAPIView):
@@ -29,6 +29,12 @@ class AppItemListView(generics.ListAPIView):
     serializer_class = AppItemSerializer
     permission_classes = [AllowAny]
 
+
+class CartItemListView(generics.ListAPIView):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    permission_classes = [AllowAny] 
+    
 # List Order Items (public access)
 class OrderItemListView(generics.ListAPIView):
     queryset = OrderItem.objects.all()
