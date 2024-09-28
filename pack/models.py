@@ -40,6 +40,7 @@ class CartItem(models.Model):
     session_id = models.CharField(max_length=100, null=True, blank=True) 
     product = models.ForeignKey(Product, on_delete=models.CASCADE)  # Link to the product
     quantity = models.PositiveIntegerField(default=1)  # Quantity of the product in the cart
+    total = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in {self.user.username}'s cart"
@@ -65,6 +66,7 @@ class Order(models.Model):
     status = models.CharField(choices=STATUS, max_length=25, default='pending')
     total = models.PositiveIntegerField(default=0)
     created_on = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
         return f"Order {self.id} by {self.user.username}"
