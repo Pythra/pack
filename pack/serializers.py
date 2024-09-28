@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Order, Profile, AppItem, OrderItem
+from .models import Product, Order, Profile, AppItem, OrderItem, CartItem
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,8 +41,8 @@ class CartItemCreateSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
     
     class Meta:
-        model = OrderItem
-        fields = ['session_id', 'product', 'quantity', 'total']
+        model = CartItem
+        fields = ['user', 'session_id', 'product', 'quantity', 'total']
     
     def create(self, validated_data):
         return OrderItem.objects.create(**validated_data)
