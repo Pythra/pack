@@ -83,39 +83,43 @@ def fetch_user(request):
     }
     return Response(user_data)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def transfer_order_items(request):
-    user = request.user
-    session_id = request.data.get('session_id')
-
-    order_items = OrderItem.objects.filter(session_id=session_id)
-    order_items.update(user=user, session_id=None)
-
-    return Response({'status': 'success', 'message': 'Order items transferred successfully'})
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def checkout(request):
+async def checkout(request):
     user = request.user
     session_id = request.data.get('session_id')
     
     if not user and not session_id:
         return Response({"error": "User or session ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    order_items = OrderItem.objects.filter(user=user) if user else OrderItem.objects.filter(session_id=session_id)
+    # Fetch CartItems associated with the user or session ID
+    cart_items = CartItem.objects.filter(user=user) if user else CartItem.objects.filter(session_id=session_id)
 
-    if not order_items.exists():
+    if not cart_items.exists():
         return Response({"error": "No items found in the cart."}, status=status.HTTP_404_NOT_FOUND)
 
-    total_price = sum(item.total for item in order_items)
+    # Calculate total price of cart items
+    total_price = sum(item.total for item in cart_items)
 
+    # Create a new order
     order = Order.objects.create(
         user=user,
         status='unplaced',  # Default status for newly created orders
         total=total_price
     )
 
-    order_items.update(order=order, user=user)  # Associate with the new Order
+    # Transfer CartItems to OrderItems
+    for cart_item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            user=user,
+            product=cart_item.product,
+            quantity=cart_item.quantity,
+            total=cart_item.total
+        )
+
+    # Delete the CartItems after transferring
+    cart_items.delete()
 
     return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
