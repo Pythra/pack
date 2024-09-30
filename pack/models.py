@@ -76,7 +76,6 @@ class OrderItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)    
-    session_id = models.CharField(max_length=100, null=True, blank=True)  # Temporary identifier
     total = models.PositiveIntegerField(default=0)
 
     def __str__(self):

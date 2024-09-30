@@ -88,13 +88,9 @@ def fetch_user(request):
 @permission_classes([IsAuthenticated])
 async def checkout(request):
     user = request.user
-    session_id = request.data.get('session_id')
     
-    if not user and not session_id:
-        return Response({"error": "User or session ID is required."}, status=status.HTTP_400_BAD_REQUEST)
-
     # Fetch CartItems associated with the user or session ID
-    cart_items = CartItem.objects.filter(user=user) if user else CartItem.objects.filter(session_id=session_id)
+    cart_items = CartItem.objects.filter(user=user)
 
     if not cart_items.exists():
         return Response({"error": "No items found in the cart."}, status=status.HTTP_404_NOT_FOUND)
