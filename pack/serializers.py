@@ -9,7 +9,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id', 'user', 'status', 'total', 'created_on']
+        fields = ['user', 'status', 'total', 'created_on']
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,14 +28,14 @@ class OrderItemSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = OrderItem
-        fields = ['user', 'tag', 'product', 'quantity', 'total']
+        fields = ['order', 'user', 'product', 'quantity', 'total']
 
 class OrderItemCreateSerializer(serializers.ModelSerializer):  
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
     
     class Meta:
         model = OrderItem
-        fields = ['user', 'tag', 'product', 'quantity', 'total']
+        fields = ['order', 'user', 'product', 'quantity', 'total']
  
 class CartItemCreateSerializer(serializers.ModelSerializer):  
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())

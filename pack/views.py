@@ -124,7 +124,6 @@ class CheckoutView(generics.GenericAPIView):
                 product=cart_item.product,
                 quantity=cart_item.quantity,
                 total=cart_item.total,
-                tag='ordered'  # Assuming 'tag' is a field in your OrderItem model
             )
 
         # Delete cart items after creating order items

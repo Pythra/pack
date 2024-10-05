@@ -77,8 +77,7 @@ class Order(models.Model):
         return f"Order {self.id} by {self.user.username}"
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', blank=True, null=True)
-    tag = models.CharField(max_length=20, choices=DISPLAY, default='in_cart')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', blank=True, null=True) 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)    
