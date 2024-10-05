@@ -83,38 +83,52 @@ def fetch_user(request):
         'username': user.username,
     }
     return Response(user_data)
-
-from rest_framework.views import APIView
-
-class CheckoutView(APIView):
+ 
+class CheckoutView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         user = request.user
         cart_items = CartItem.objects.filter(user=user)
 
+        # Debugging: Check if there are cart items for the user
+        print(f'User: {user.username}, Cart Items Count: {cart_items.count()}')
+
         if not cart_items.exists():
             return Response({"error": "No items found in the cart."}, status=status.HTTP_404_NOT_FOUND)
 
+        # Calculate total price
         total_price = sum(item.total for item in cart_items)
+
+        # Debugging: Print the total price calculated
+        print(f'Total Price Calculated: {total_price}')
+
+        # Create a new order
         order = Order.objects.create(
             user=user,
             status='pending',  
             total=total_price
         )
 
+        # Debugging: Print the order details
+        print(f'Order Created: ID {order.id}, User: {user.username}, Total: {total_price}')
+
         # Create order items from cart items
         for cart_item in cart_items:
+            # Debugging: Print details for each cart item
+            print(f'Creating Order Item: Product: {cart_item.product}, Quantity: {cart_item.quantity}, Total: {cart_item.total}')
+            
             OrderItem.objects.create(
                 order=order,
                 user=user,
                 product=cart_item.product,
                 quantity=cart_item.quantity,
                 total=cart_item.total,
-                tag='ordered'  # Update status to ordered
+                tag='ordered'  # Assuming 'tag' is a field in your OrderItem model
             )
 
-        # Once order items are created, delete the cart items
+        # Delete cart items after creating order items
         cart_items.delete()
 
+        # Return response with order ID
         return Response({"order_id": order.id, "message": "Order created successfully."}, status=status.HTTP_201_CREATED)
