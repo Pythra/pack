@@ -111,6 +111,7 @@ class CheckoutView(APIView):
                 product=cart_item.product,
                 quantity=cart_item.quantity,
                 total=cart_item.total,
+                tag='ordered'  # Update status to ordered
             )
 
         # Once order items are created, delete the cart items
