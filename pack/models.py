@@ -7,6 +7,11 @@ CAT = (
     ('oil', 'oil'),
 )
 
+DISPLAY = (
+    ('in_cart', 'in_cart'),
+     ('ordered', 'ordered')
+)
+
 STATUS = (
     ('empty', 'empty'),
     ('unplaced', 'unplaced'),
@@ -73,6 +78,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', blank=True, null=True)
+    tag = models.CharField(max_length=20, choices=DISPLAY, default='in_cart')
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)    

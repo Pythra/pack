@@ -2,12 +2,12 @@ from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 from .views import (
     ProductListView, ProductDetailView, AppItemListView, OrderItemListView, 
-    UserDetailView, OrderItemCreateView, fetch_user, checkout, CartItemListView, CartItemCreateView
-)
+    UserDetailView, OrderItemCreateView, fetch_user, CheckoutView, CartItemListView, 
+    CartItemCreateView, )
 
 urlpatterns = [
     path('products/', ProductListView.as_view(), name='products'),
-    path('checkout/', checkout, name='checkout'),
+    path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('app-items/', AppItemListView.as_view(), name='app-items'),
     path('cart-items/create/', CartItemCreateView.as_view(), name='cartitem-create'),
     path('cart-items/', CartItemListView.as_view(), name='cart-items'),

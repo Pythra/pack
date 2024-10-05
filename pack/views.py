@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status
+from rest_framework import generics, status 
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
@@ -83,39 +84,37 @@ def fetch_user(request):
     }
     return Response(user_data)
 
+from rest_framework.views import APIView
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-async def checkout(request):
-    user = request.user
-    
-    # Fetch CartItems associated with the user or session ID
-    cart_items = CartItem.objects.filter(user=user)
+class CheckoutView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    if not cart_items.exists():
-        return Response({"error": "No items found in the cart."}, status=status.HTTP_404_NOT_FOUND)
+    def post(self, request):
+        user = request.user
+        cart_items = CartItem.objects.filter(user=user)
 
-    # Calculate total price of cart items
-    total_price = sum(item.total for item in cart_items)
+        if not cart_items.exists():
+            return Response({"error": "No items found in the cart."}, status=status.HTTP_404_NOT_FOUND)
 
-    # Create a new order
-    order = Order.objects.create(
-        user=user,
-        status='unplaced',  # Default status for newly created orders
-        total=total_price
-    )
-
-    # Transfer CartItems to OrderItems
-    for cart_item in cart_items:
-        OrderItem.objects.create(
-            order=order,
+        total_price = sum(item.total for item in cart_items)
+        order = Order.objects.create(
             user=user,
-            product=cart_item.product,
-            quantity=cart_item.quantity,
-            total=cart_item.total
+            status='pending',  
+            total=total_price
         )
 
-    # Delete the CartItems after transferring
-    cart_items.delete()
+        # Create order items from cart items
+        for cart_item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                user=user,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                total=cart_item.total,
+                tag='ordered'  # Update status to ordered
+            )
 
-    return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+        # Once order items are created, delete the cart items
+        cart_items.delete()
+
+        return Response({"order_id": order.id, "message": "Order created successfully."}, status=status.HTTP_201_CREATED)
