@@ -28,14 +28,14 @@ class OrderItemSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = OrderItem
-        fields = ['user', 'product', 'quantity', 'total']
+        fields = ['user', 'tag', 'product', 'quantity', 'total']
 
 class OrderItemCreateSerializer(serializers.ModelSerializer):  
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
     
     class Meta:
         model = OrderItem
-        fields = ['user', 'product', 'quantity', 'total']
+        fields = ['user', 'tag', 'product', 'quantity', 'total']
  
 class CartItemCreateSerializer(serializers.ModelSerializer):  
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
