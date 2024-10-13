@@ -35,7 +35,20 @@ class CartItemListView(generics.ListAPIView):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
     permission_classes = [AllowAny] 
-    
+
+class CartItemUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    permission_classes = [AllowAny]  
+
+class OrderListView(generics.ListAPIView):
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [AllowAny]  
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
 # List Order Items (public access)
 class OrderItemListView(generics.ListAPIView):
     queryset = OrderItem.objects.all()
