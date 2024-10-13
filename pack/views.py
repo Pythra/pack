@@ -42,7 +42,7 @@ class CartItemUpdateView(generics.RetrieveUpdateAPIView):
     permission_classes = [AllowAny]  
 
 class OrderListView(generics.ListAPIView):
-    queryset = OrderItem.objects.all()
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [AllowAny]  
 
