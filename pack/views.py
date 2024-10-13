@@ -46,9 +46,6 @@ class OrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [AllowAny]  
 
-    def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
-
 # List Order Items (public access)
 class OrderItemListView(generics.ListAPIView):
     queryset = OrderItem.objects.all()
