@@ -18,6 +18,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class AppItemSerializer(serializers.ModelSerializer):    
     product = ProductSerializer()
+    condition = ProductSerializer()
     
     class Meta:
         model = AppItem
