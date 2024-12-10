@@ -3,7 +3,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from .views import (
     ProductListView, ProductDetailView, AppItemListView, OrderItemListView, 
     UserDetailView, OrderItemCreateView, fetch_user, CheckoutView, CartItemListView, 
-    CartItemCreateView, CartItemUpdateView, OrderListView)
+    CartItemCreateView, CartItemUpdateView, OrderListView, SignupView, LogoutView)
 
 urlpatterns = [
     path('products/', ProductListView.as_view(), name='products'),
@@ -19,4 +19,6 @@ urlpatterns = [
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('login/', obtain_auth_token, name='login'), 
     path('user/', fetch_user, name='fetch-user'),
+    path('signup/', SignupView.as_view(), name='signup'),   
+    path('logout/', LogoutView.as_view(), name='logout'),   
 ]
