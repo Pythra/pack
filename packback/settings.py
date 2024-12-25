@@ -19,6 +19,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'corsheaders',
     'pack',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,13 +43,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'packback.urls'
-
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [],  # No authentication classes
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',  # Allow access without authentication
     ],
 }
 
@@ -67,6 +65,9 @@ TEMPLATES = [
         },
     },
 ]
+
+ASGI_APPLICATION = "packback.asgi.application"
+
 
 WSGI_APPLICATION = 'packback.wsgi.application'
 
